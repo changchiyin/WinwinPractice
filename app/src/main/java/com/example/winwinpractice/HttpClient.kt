@@ -13,14 +13,21 @@ import org.json.JSONObject
 import java.io.IOException
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
 class HttpClient() {
-    private var client = OkHttpClient().newBuilder().build()
+    private val client = OkHttpClient().newBuilder().build()
+
+    private val _totalCount = mutableIntStateOf(0)
+    val totalCount: State<Int>
+        get() = _totalCount
+
     private val _items = mutableStateOf<List<ItemClass>>(emptyList())
     val items: State<List<ItemClass>>
         get() = _items
+
     init {
         val request: Request = Request.Builder()
             .url("https://raw.githubusercontent.com/winwiniosapp/interview/main/interview.json")
@@ -35,9 +42,10 @@ class HttpClient() {
             override fun onResponse(call: Call, response: Response) {
                 val result = response.body!!.string()
                 val Jobject = JSONObject(result)
+                _totalCount.intValue = Jobject.getJSONObject("data").getInt("totalCount")
                 val Jarray = Jobject.getJSONObject("data").getJSONArray("items")
                 val listType = object : TypeToken<ArrayList<ItemClass?>?>() {}.type
-                _items.value = Gson().fromJson<List<ItemClass>>(Jarray.toString(), listType)
+                _items.value = Gson().fromJson(Jarray.toString(), listType)
             }
         })
     }
