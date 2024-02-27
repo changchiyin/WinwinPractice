@@ -59,45 +59,52 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainView(){
     val httpClient = HttpClient()
-    LazyColumn(
-        modifier = Modifier.padding(5.dp)
-    ) {
-        itemsIndexed(httpClient.items.value) { index, item->
-            Column {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(item.user.imageUrl)
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = null,
-                        contentScale = ContentScale.Fit,
+    Column {
+        TopAppBar(
+            title = {
+                Text("totalCount:${httpClient.totalCount.value}")
+            }
+        )
+        LazyColumn(
+            modifier = Modifier.padding(5.dp)
+        ) {
+            itemsIndexed(httpClient.items.value) { index, item->
+                Column {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(item.user.imageUrl)
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = null,
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .height(50.dp)
+                                .wrapContentWidth()
+                                .clip(RoundedCornerShape(100.dp))
+                        )
+                        Text(text = item.user.nickName)
+                    }
+                    FlowRow(
                         modifier = Modifier
-                            .height(50.dp)
-                            .wrapContentWidth()
-                            .clip(RoundedCornerShape(100.dp))
-                    )
-                    Text(text = item.user.nickName)
-                }
-                FlowRow(
-                    modifier = Modifier
-                        .padding(4.dp),
-                ){
-                    item.tags.forEach {
-                        Box(modifier = Modifier.padding(5.dp)){
-                            Text(
-                                text = it,
-                                modifier = Modifier
-                                    .background(Color.LightGray)
-                                    .padding(10.dp)
-                            )
+                            .padding(4.dp),
+                    ){
+                        item.tags.forEach {
+                            Box(modifier = Modifier.padding(5.dp)){
+                                Text(
+                                    text = it,
+                                    modifier = Modifier
+                                        .background(Color.LightGray)
+                                        .padding(10.dp)
+                                )
+                            }
                         }
                     }
                 }
-            }
 
+            }
         }
     }
 }
